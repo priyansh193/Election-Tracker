@@ -9,6 +9,7 @@ import Internationsl from './pages/Internationsl'
 import Upcomming from './pages/Upcomming'
 import StateDetails from './pages/StateDetails'
 import ElectionResults from './pages/ElectionResults'  // Add this import
+import AddElectionData from './pages/AddElectionData'
 
 function App() {
 
@@ -24,6 +25,7 @@ function App() {
         <Route path='/state-details/:stateName' element={<StateDetails/>}/>
         <Route path='/election-results' element={<ElectionResults/>}/>  {/* Add this route */}
         <Route path='/election-results/:stateName/:year' element={<ElectionResults/>}/>  {/* Add this route */}
+        <Route path='/add' element={<AddElectionData/>}/>
       </Routes>
       <Footer/>
     </div>
