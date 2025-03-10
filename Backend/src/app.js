@@ -14,7 +14,9 @@ app.use(express.static("public"))
 app.use(cookieParser())
 
 import electionRoutes from "./routes/elections.route.js"
+import upcommingElectionRoutes from "./routes/upcomming.route.js"
 
 app.use("/api/elections", electionRoutes)
+app.use("/api/upcommingElections", upcommingElectionRoutes)
 
 export {app}

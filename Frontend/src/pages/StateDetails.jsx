@@ -1,19 +1,37 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import axios from 'axios'
 
 function StateDetails() {
   const navigate = useNavigate();
   const { stateName } = useParams();
-  
-  const years = [
-    "2023", "2018", "2013", "2008", 
-    "2003", "1998", "1993", "1988",
-    "1983", "1978", "1973", "1968"
-  ];
+  const [years, setYears] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchYears = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5001/api/elections/years/${stateName}`);
+        console.log(response)
+        setYears(response.data.data.years);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching years:", error);
+        setError("No data available for this state");
+        setLoading(false);
+      }
+    };
+
+    fetchYears();
+  }, [stateName]);
 
   const handleYearClick = (yearName) => {
     navigate(`/election-results/${stateName}/${yearName}`);
   };
+
+  if (loading) return <div className="text-center py-10">Loading...</div>;
+  if (error) return <div className="text-center py-10 text-red-500">Error: {error}</div>;
 
   return (
     <div className="flex flex-col items-center justify-center mt-8 mb-8">

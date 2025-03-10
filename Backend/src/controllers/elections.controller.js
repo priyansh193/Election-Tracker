@@ -6,7 +6,7 @@ import { ElectionData } from "../models/elections.model.js"
 const getElectionData = asyncHandler(async (req, res) => {
     const { place, year } = req.params
 
-    const electionData = await ElectionData.findOne({ place, year })
+    const electionData = await ElectionData.findOne({ place : place.toLowerCase(), year })
 
     if (!electionData) {
         throw new ApiError(404, "Election data not found")
@@ -35,7 +35,7 @@ const addElectionData = asyncHandler(async (req, res) => {
         throw new ApiError(400, "At least one party data is required")
     }
 
-    const existingData = await ElectionData.findOne({ place, year })
+    const existingData = await ElectionData.findOne({ place : place.toLowerCase(), year })
 
     if (existingData) {
         throw new ApiError(409, "Election data already exists for this place and year")
@@ -43,7 +43,7 @@ const addElectionData = asyncHandler(async (req, res) => {
 
     // Create new election data
     const electionData = await ElectionData.create({
-        place,
+        place : place.toLowerCase(),
         year,
         totalSeats,
         majorityMark,
@@ -61,7 +61,7 @@ const updateElectionData = asyncHandler(async (req, res) => {
     const updateData = req.body
 
     const updatedData = await ElectionData.findOneAndUpdate(
-        { place, year },
+        { place : place.toLowerCase(), year },
         updateData,
         { 
             new: true,
@@ -81,7 +81,7 @@ const updateElectionData = asyncHandler(async (req, res) => {
 const deleteElectionData = asyncHandler(async (req, res) => {
     const { place, year } = req.params
 
-    const deletedData = await ElectionData.findOneAndDelete({ place, year })
+    const deletedData = await ElectionData.findOneAndDelete({ place : place.toLowerCase(), year })
 
     if (!deletedData) {
         throw new ApiError(404, "Election data not found")
@@ -95,7 +95,7 @@ const deleteElectionData = asyncHandler(async (req, res) => {
 const getAllElectionDataByPlace = asyncHandler(async (req, res) => {
     const { place } = req.params
 
-    const electionData = await ElectionData.find({ place })
+    const electionData = await ElectionData.find({ place : place.toLowerCase() })
         .sort({ year: -1 })
 
     if (!electionData.length) {
@@ -110,7 +110,7 @@ const getAllElectionDataByPlace = asyncHandler(async (req, res) => {
 const getElectionYearsByPlace = asyncHandler(async (req, res) => {
     const { place } = req.params
 
-    const elections = await ElectionData.find({ place })
+    const elections = await ElectionData.find({ place : place.toLowerCase() })
         .select('year -_id')
         .sort({ year: -1 })
 

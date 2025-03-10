@@ -1,37 +1,45 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Doughnut } from 'react-chartjs-2'
+import axios from 'axios'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
 function ElectionResults() {
   const { stateName, year } = useParams();
+  const [electionData, setElectionData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Mock election data - replace with actual data
-  const electionData = {
-    totalSeats: 200,
-    votingPercentage: 75.5,
-    parties: [
-      { name: "Party A", seats: 95, votes: "38%", color: "rgb(59, 130, 246)" },
-      { name: "Party B", seats: 85, votes: "36%", color: "rgb(249, 115, 22)" },
-      { name: "Party C", seats: 15, votes: "18%", color: "rgb(34, 197, 94)" },
-      { name: "Others", seats: 5, votes: "8%", color: "rgb(107, 114, 128)" }
-    ],
-    additionalInfo: {
-      totalVoters: "2.5M",
-      validVotes: "1.9M",
-      rejectedVotes: "0.1M",
-      winningMargin: "2%"
+  const fetchElectionData = async () => {
+    try {
+      const response = await axios.get(`http://localhost:5001/api/elections/data/${stateName}/${year}`);
+      if (response.data.success) {
+        setElectionData(response.data.data);
+      }
+    } catch (error) {
+      setError(error.message);
+      console.log(error)
+    } finally {
+      setLoading(false);
     }
-  };
+  }
+
+  useEffect(() => {
+    fetchElectionData();
+  }, [stateName, year]);
+
+  if (loading) return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
+  if (error) return <div className="flex justify-center items-center min-h-screen text-red-500">Error: {"data Not Found"}</div>;
+  if (!electionData) return <div className="flex justify-center items-center min-h-screen">No data available</div>;
 
   // Chart configuration
   const chartData = {
-    labels: electionData.parties.map(party => `${party.name} (${party.seats} seats)`),
+    labels: electionData.parties.map(party => `${party.name} (${party.seatsWon} seats)`),
     datasets: [
       {
-        data: electionData.parties.map(party => party.seats),
+        data: electionData.parties.map(party => party.seatsWon),
         backgroundColor: electionData.parties.map(party => party.color),
         borderColor: electionData.parties.map(() => '#fff'),
         borderWidth: 2,
@@ -55,7 +63,7 @@ function ElectionResults() {
     <div className="container mx-auto px-4 py-8">
       {/* Header Section */}
       <div className="text-center mb-10">
-        <h1 className="text-3xl font-bold mb-2">{stateName} Assembly Election {year}</h1>
+        <h1 className="text-3xl font-bold mb-2">{stateName.toUpperCase()} Assembly Election {year}</h1>
         <p className="text-gray-600">Total Seats: {electionData.totalSeats} | Voting Percentage: {electionData.votingPercentage}%</p>
       </div>
 
@@ -80,20 +88,20 @@ function ElectionResults() {
           <h2 className="text-xl font-semibold mb-4">Detailed Statistics</h2>
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-indigo-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Total Voters</p>
-              <p className="text-xl font-bold text-indigo-600">{electionData.additionalInfo.totalVoters}</p>
+              <p className="text-sm text-gray-600">Total Seats</p>
+              <p className="text-xl font-bold text-indigo-600">{electionData.totalSeats}</p>
             </div>
             <div className="bg-teal-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Valid Votes</p>
-              <p className="text-xl font-bold text-teal-600">{electionData.additionalInfo.validVotes}</p>
+              <p className="text-sm text-gray-600">Major Parties</p>
+              <p className="text-xl font-bold text-teal-600">{electionData.parties.length - 1}</p>
             </div>
             <div className="bg-rose-50 p-4 rounded-lg">
               <p className="text-sm text-gray-600">Rejected Votes</p>
-              <p className="text-xl font-bold text-rose-600">{electionData.additionalInfo.rejectedVotes}</p>
+              <p className="text-xl font-bold text-rose-600"></p>
             </div>
             <div className="bg-amber-50 p-4 rounded-lg">
               <p className="text-sm text-gray-600">Winning Margin</p>
-              <p className="text-xl font-bold text-amber-600">{electionData.additionalInfo.winningMargin}</p>
+              <p className="text-xl font-bold text-amber-600"></p>
             </div>
           </div>
         </div>
@@ -109,12 +117,15 @@ function ElectionResults() {
               <div key={index} className="relative">
                 <div className="flex justify-between mb-1">
                   <span className="font-medium">{party.name}</span>
-                  <span>{party.seats} seats ({party.votes})</span>
+                  <span>{party.seatsWon} seats ({party.voteShare}%)</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-4">
                   <div 
-                    className={`${party.color} h-4 rounded-full transition-all duration-500`}
-                    style={{ width: party.votes }}
+                    className="h-4 rounded-full transition-all duration-500"
+                    style={{ 
+                      width: `${(party.seatsWon / electionData.totalSeats) * 100}%`,
+                      backgroundColor: party.color 
+                    }}
                   ></div>
                 </div>
               </div>
@@ -136,7 +147,7 @@ function ElectionResults() {
             </div>
             <div className="bg-purple-50 p-4 rounded-lg">
               <p className="text-sm text-gray-600">Voter Turnout</p>
-              <p className="text-xl font-bold text-purple-600">75.5%</p>
+              <p className="text-xl font-bold text-purple-600">{electionData.votingPercentage}</p>
             </div>
             <div className="bg-orange-50 p-4 rounded-lg">
               <p className="text-sm text-gray-600">Leading Margin</p>
@@ -150,7 +161,7 @@ function ElectionResults() {
       <div className="bg-white rounded-lg shadow-lg p-6">
         <h2 className="text-xl font-semibold mb-4">Key Highlights</h2>
         <ul className="list-disc list-inside space-y-2 text-gray-700">
-          <li>Party A emerged as the single largest party</li>
+          <li>Overall Free and Fair Elections were Conducted</li>
           <li>Highest voter turnout recorded in last 20 years</li>
           <li>Total of 1,200 candidates contested the election</li>
           <li>Electronic Voting Machines used in all constituencies</li>
