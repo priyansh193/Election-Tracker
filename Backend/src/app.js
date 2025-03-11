@@ -15,8 +15,10 @@ app.use(cookieParser())
 
 import electionRoutes from "./routes/elections.route.js"
 import upcommingElectionRoutes from "./routes/upcomming.route.js"
+import UserRouter from "./routes/user.route.js"
 
 app.use("/api/elections", electionRoutes)
 app.use("/api/upcommingElections", upcommingElectionRoutes)
+app.use("/api/user", UserRouter)
 
 export {app}

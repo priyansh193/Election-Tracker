@@ -1,8 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { UserContext } from '../context/UserContext'
 
 function AddUpcommingElection() {
     const navigate = useNavigate()
+    const { isLoggedIn, user } = useContext(UserContext)
     const [error, setError] = useState(null)
     const [formData, setFormData] = useState({
         place: '',
@@ -10,6 +12,13 @@ function AddUpcommingElection() {
         totalSeats: '',
         category: ''
     })
+
+    // Protect route for admin only
+    useEffect(() => {
+        if (!isLoggedIn || user?.username !== import.meta.env.VITE_ADMIN_USERNAME) {
+            navigate('/')
+        }
+    }, [isLoggedIn, user, navigate])
 
     const handleChange = (e) => {
         const { name, value } = e.target
@@ -20,32 +29,41 @@ function AddUpcommingElection() {
     }
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError(null);
+        e.preventDefault()
+        setError(null)
         
         try {
+            const token = localStorage.getItem('accessToken')
+            if (!token) {
+                throw new Error('No access token found')
+            }
+
             const response = await fetch('http://localhost:5001/api/upcommingElections/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(formData),
-            });
+            })
     
             if (!response.ok) {
-                const text = await response.text();  
-                throw new Error(`Error: ${response.status} - ${text}`);
+                const text = await response.text()
+                throw new Error(`Error: ${response.status} - ${text}`)
             }
     
-            const data = await response.json();
-    
-            navigate('/upcoming');
+            const data = await response.json()
+            navigate('/upcomming')
         } catch (error) {
-            // Log the error message
-            setError(error.message);
-            console.error("Error adding election:", error);
+            setError(error.message)
+            console.error("Error adding election:", error)
+            
+            // Handle unauthorized access
+            if (error.message.includes('401')) {
+                navigate('/login')
+            }
         }
-    };
+    }
     
     
     return (
