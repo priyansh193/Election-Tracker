@@ -1,60 +1,67 @@
-import { createContext, useState, useEffect } from "react"
+import { createContext, useState, useEffect } from "react";
 
-const UserContext = createContext()
+const UserContext = createContext();
 
 const UserProvider = ({ children }) => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false)
-    const [user, setUser] = useState(null)
-    const [loading, setLoading] = useState(true)
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const checkAuth = () => {
             try {
-                const token = localStorage.getItem("accessToken")
-                setIsLoggedIn(!!token)
+                const token = localStorage.getItem("accessToken");
+                const userData = localStorage.getItem("UserData");
+                setIsLoggedIn(!!token);
 
-                const userData = JSON.parse(localStorage.getItem("UserData"))
-                setUser(userData)
-                
+                if (userData) {
+                    const parsedUserData = JSON.parse(userData);
+                    if (parsedUserData && parsedUserData._id) {
+                        setUser(parsedUserData);
+                    } else {
+                        setUser(null);
+                    }
+                } else {
+                    setUser(null);
+                }
             } catch (error) {
-                console.error("Auth check failed:", error)
-                // Clear invalid data
-                localStorage.removeItem("accessToken")
-                localStorage.removeItem("userData")
-                setIsLoggedIn(false)
-                setUser(null)
+                console.error("Auth check failed:", error);
+                localStorage.removeItem("accessToken");
+                localStorage.removeItem("UserData");
+                setIsLoggedIn(false);
+                setUser(null);
             } finally {
-                setLoading(false)
+                setLoading(false);
             }
-        }
+        };
 
-        checkAuth()
-    }, [])
+        checkAuth();
+    }, []);
 
     const logout = () => {
-        localStorage.removeItem("accessToken")
-        localStorage.removeItem("UserData")
-        setIsLoggedIn(false)
-        setUser(null)
-    }
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("UserData");
+        setIsLoggedIn(false);
+        setUser(null);
+    };
 
     if (loading) {
-        return null 
+        return null;
     }
 
     return (
-        <UserContext.Provider 
-            value={{ 
-                isLoggedIn, 
-                setIsLoggedIn, 
-                user, 
+        <UserContext.Provider
+            value={{
+                isLoggedIn,
+                setIsLoggedIn,
+                user,
                 setUser,
-                logout 
+                logout
             }}
         >
             {children}
         </UserContext.Provider>
-    )
-}
+    );
+};
 
-export { UserContext, UserProvider }
+export { UserContext, UserProvider };

@@ -4,7 +4,7 @@ import { UserContext } from '../context/UserContext'
 
 function Login() {
     const navigate = useNavigate()
-    const { setIsLoggedIn } = useContext(UserContext)
+    const { setIsLoggedIn, setUser } = useContext(UserContext)
     const [formData, setFormData] = useState({
         email: '',
         password: ''
@@ -43,6 +43,8 @@ function Login() {
             localStorage.setItem('accessToken', data.data.accessToken)
             localStorage.setItem('UserData', JSON.stringify(data.data.user))
             setIsLoggedIn(true)
+            const userData = localStorage.getItem('UserData')
+            setUser(JSON.parse(userData))
             navigate('/')
         } catch (error) {
             setError(error.message)
