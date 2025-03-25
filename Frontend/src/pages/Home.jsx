@@ -14,7 +14,7 @@ const Home = () => {
         International Elections
       </Link>
       <Link to='/upcomming' className="w-[90%] h-18 my-6 bg-gradient-to-r from-purple-500 to-pink-500 relative flex items-center justify-center text-white font-bold transform -skew-x-12 cursor-pointer hover:from-blue-500 hover:to-purple-900 transition-all duration-300">
-        Upcomming Elections
+        Upcoming Elections
       </Link>
     </div>
   );
