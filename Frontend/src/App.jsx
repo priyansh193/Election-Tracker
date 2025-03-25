@@ -15,6 +15,7 @@ import Login from './pages/Login'
 import SignUp from './pages/SignUp'
 import AddData from './pages/AddData'
 import LivePolls from './pages/LivePolls'
+import AddPoll from './pages/AddPoll'
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
           <Route path="/register" element={<SignUp />} />
           <Route path="/add" element={<AddData/>} />
           <Route path="/live" element={<LivePolls/>} />
+          <Route path="/addpoll" element={<AddPoll/>} />
         </Routes>
       </main>
       <Footer />

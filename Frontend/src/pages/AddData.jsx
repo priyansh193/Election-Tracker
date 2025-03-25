@@ -28,23 +28,11 @@ function AddData() {
             icon: '📅'
         },
         {
-            title: 'Manage Polls',
+            title: 'Add Polls',
             description: 'Create and manage election polls',
-            link: '/managePoll',
+            link: '/addpoll',
             icon: '📈'
         },
-        {
-            title: 'Delete Election Data',
-            description: 'Remove existing election results',
-            link: '/deleteElection',
-            icon: '🗑️'
-        },
-        {
-            title: 'Delete Upcoming Election',
-            description: 'Remove scheduled elections',
-            link: '/deleteUpcoming',
-            icon: '❌'
-        }
     ]
 
 

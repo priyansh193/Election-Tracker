@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { use, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Doughnut } from 'react-chartjs-2'
@@ -11,12 +11,14 @@ function ElectionResults() {
   const [electionData, setElectionData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [partiesData, setPartiesData] = useState([])
 
   const fetchElectionData = async () => {
     try {
       const response = await axios.get(`http://localhost:5001/api/elections/data/${stateName}/${year}`);
       if (response.data.success) {
         setElectionData(response.data.data);
+        setPartiesData(response.data.data.parties);
       }
     } catch (error) {
       setError(error.message);
@@ -29,6 +31,14 @@ function ElectionResults() {
   useEffect(() => {
     fetchElectionData();
   }, [stateName, year]);
+
+  useEffect(() => {
+    if (partiesData.length > 0) {
+      partiesData.sort((a, b) => b.seatsWon - a.seatsWon)
+      console.log(partiesData)
+    }
+  }, [partiesData])
+
 
   if (loading) return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
   if (error) return <div className="flex justify-center items-center min-h-screen text-red-500">Error: {"data Not Found"}</div>;
@@ -117,7 +127,7 @@ function ElectionResults() {
               <div key={index} className="relative">
                 <div className="flex justify-between mb-1">
                   <span className="font-medium">{party.name}</span>
-                  <span>{party.seatsWon} seats ({party.voteShare}%)</span>
+                  <span>{party.seatsWon} seats</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-4">
                   <div 
@@ -138,20 +148,20 @@ function ElectionResults() {
           <h2 className="text-xl font-semibold mb-4">Key Statistics</h2>
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-blue-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Winning Party</p>
-              <p className="text-xl font-bold text-blue-600">Party A</p>
+              <p className="text-sm text-gray-600">Most Seats</p>
+              <p className="text-xl font-bold text-blue-600">{partiesData[0].name}</p>
             </div>
             <div className="bg-green-50 p-4 rounded-lg">
               <p className="text-sm text-gray-600">Vote Share</p>
-              <p className="text-xl font-bold text-green-600">38%</p>
+              <p className="text-xl font-bold text-green-600">{partiesData[0].voteShare}%</p>
             </div>
             <div className="bg-purple-50 p-4 rounded-lg">
               <p className="text-sm text-gray-600">Voter Turnout</p>
               <p className="text-xl font-bold text-purple-600">{electionData.votingPercentage}</p>
             </div>
             <div className="bg-orange-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Leading Margin</p>
-              <p className="text-xl font-bold text-orange-600">10 seats</p>
+              <p className="text-sm text-gray-600">Seat Share</p>
+              <p className="text-xl font-bold text-orange-600">{((partiesData[0].seatsWon / electionData.totalSeats)*100).toFixed(2)}%</p>
             </div>
           </div>
         </div>
