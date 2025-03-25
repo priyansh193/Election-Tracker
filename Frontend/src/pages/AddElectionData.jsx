@@ -73,7 +73,7 @@ function AddElectionData() {
                 throw new Error('No access token found')
             }
 
-            const response = await fetch('http://localhost:5001/api/elections/add', {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/elections/add`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

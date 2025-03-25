@@ -15,7 +15,7 @@ function ElectionResults() {
 
   const fetchElectionData = async () => {
     try {
-      const response = await axios.get(`http://localhost:5001/api/elections/data/${stateName}/${year}`);
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/elections/data/${stateName}/${year}`);
       if (response.data.success) {
         setElectionData(response.data.data);
         setPartiesData(response.data.data.parties);

@@ -8,7 +8,7 @@ function Upcomming() {
   useEffect(() => {
     const fetchUpcomingElections = async () => {
       try {
-        const response = await fetch('http://localhost:5001/api/upcommingElections')
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/upcommingElections`)
         
         if (!response.ok) {
           throw new Error('Failed to fetch upcoming elections')

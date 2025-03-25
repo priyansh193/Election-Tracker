@@ -65,7 +65,7 @@ function AddPoll() {
         setLoading(true)
 
         try {
-            const response = await fetch('http://localhost:5001/api/polls/create', {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/polls/create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

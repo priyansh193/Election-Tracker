@@ -12,7 +12,7 @@ function StateDetails() {
   useEffect(() => {
     const fetchYears = async () => {
       try {
-        const response = await axios.get(`http://localhost:5001/api/elections/years/${stateName}`);
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/elections/years/${stateName}`);
         console.log(response)
         setYears(response.data.data.years);
         setLoading(false);

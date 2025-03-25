@@ -17,7 +17,7 @@ function LivePolls() {
     useEffect(() => {
         const fetchPolls = async () => {            
             try {
-                const response = await fetch('http://localhost:5001/api/polls', {
+                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/polls`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
                         'Content-Type': 'application/json'
@@ -55,7 +55,7 @@ function LivePolls() {
 
         setVoting(true);
         try {
-            const response = await fetch('http://localhost:5001/api/polls/vote', {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/polls/vote`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,

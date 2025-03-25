@@ -9,7 +9,7 @@ function India() {
 
   const fetchYears = async () => {
     try {
-      const response = await fetch('http://localhost:5001/api/elections/years/india', {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/elections/years/india`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

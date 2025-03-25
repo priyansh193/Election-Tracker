@@ -38,7 +38,7 @@ function AddUpcommingElection() {
                 throw new Error('No access token found')
             }
 
-            const response = await fetch('http://localhost:5001/api/upcommingElections/add', {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/upcommingElections/add`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
