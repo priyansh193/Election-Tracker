@@ -4,7 +4,7 @@ import { UserContext } from '../context/UserContext'
 
 function SignUp() {
     const navigate = useNavigate()
-    const { setIsLoggedIn } = useContext(UserContext)
+    const { setIsLoggedIn, setUser } = useContext(UserContext)
     const [formData, setFormData] = useState({
         username: '',
         email: '',
@@ -23,46 +23,77 @@ function SignUp() {
     }
 
     const handleSubmit = async (e) => {
-        e.preventDefault()
-        setError(null)
+        e.preventDefault();
+        setError(null);
 
-        // Validate passwords match
-        if (formData.password !== formData.confirmPassword) {
-            setError("Passwords don't match")
-            return
+        if (formData.password.length < 6) {
+            setError('Password must be at least 6 characters long');
+            return;
         }
 
-        setLoading(true)
+        if (formData.password !== formData.confirmPassword) {
+            setError("Passwords don't match");
+            return;
+        }
+
+        setLoading(true);
 
         try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user/register`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    username: formData.username,
-                    email: formData.email,
-                    password: formData.password
-                })
-            })
+            // Step 1: Register
+            const registerData = await registerUser({
+                username: formData.username,
+                email: formData.email,
+                password: formData.password
+            });
 
-            const data = await response.json()
+            // Step 2: Auto Login
+            const loginData = await loginUser({
+                email: formData.email,
+                password: formData.password
+            });
 
-            if (!response.ok) {
-                throw new Error(data.message || 'Registration failed')
-            }
+            // Step 3: Set Auth State
+            handleAuthSuccess(loginData.data);
 
-            // Auto login after successful registration
-            localStorage.setItem('accessToken', data.data.accessToken)
-            setIsLoggedIn(true)
-            navigate('/')
+            navigate('/');
         } catch (error) {
-            setError(error.message)
+            setError(error.message);
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
-    }
+    };
+
+    // Helper functions
+    const registerUser = async (userData) => {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(userData)
+        });
+
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || 'Registration failed');
+        return data;
+    };
+
+    const loginUser = async (credentials) => {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(credentials)
+        });
+
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || 'Login failed');
+        return data;
+    };
+
+    const handleAuthSuccess = (authData) => {
+        localStorage.setItem('accessToken', authData.accessToken);
+        localStorage.setItem('UserData', JSON.stringify(authData.user));
+        setIsLoggedIn(true);
+        setUser(authData.user);
+    };
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">

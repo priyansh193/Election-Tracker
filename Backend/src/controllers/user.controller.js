@@ -4,7 +4,6 @@ import { ApiResponse } from "../utils/ApiResponse.js"
 import { User } from "../models/user.model.js"
 import jwt from "jsonwebtoken"
 
-// Helper function to generate access and refresh tokens
 const generateTokens = async (userId) => {
     try {
         const user = await User.findById(userId)
@@ -23,12 +22,10 @@ const generateTokens = async (userId) => {
 const registerUser = asyncHandler(async (req, res) => {
     const { username, email, password } = req.body
 
-    // Validation
     if (!username || !email || !password) {
         throw new ApiError(400, "All fields are required")
     }
 
-    // Check if user already exists
     const existingUser = await User.findOne({
         $or: [{ username }, { email }]
     })
@@ -37,7 +34,6 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(409, "User with email or username already exists")
     }
 
-    // Create user
     const user = await User.create({
         username,
         email,
