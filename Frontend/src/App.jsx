@@ -16,6 +16,8 @@ import SignUp from './pages/SignUp'
 import AddData from './pages/AddData'
 import LivePolls from './pages/LivePolls'
 import AddPoll from './pages/AddPoll'
+import AboutUs from './pages/AboutUs'
+import Contact from './pages/Contact'
 
 function App() {
   return (
@@ -38,6 +40,8 @@ function App() {
           <Route path="/add" element={<AddData/>} />
           <Route path="/live" element={<LivePolls/>} />
           <Route path="/addpoll" element={<AddPoll/>} />
+          <Route path="/about" element={<AboutUs/>} />
+          <Route path="/contact" element={<Contact/>} />
         </Routes>
       </main>
       <Footer />

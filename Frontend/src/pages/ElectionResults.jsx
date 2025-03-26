@@ -79,7 +79,6 @@ function ElectionResults() {
 
       {/* Chart and Statistics Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
-        {/* Semicircular Chart */}
         <div className="bg-white rounded-lg shadow-lg p-6">
           <h2 className="text-xl font-semibold mb-4 text-center">Seat Distribution</h2>
           <div className="h-[300px] relative">
@@ -106,12 +105,12 @@ function ElectionResults() {
               <p className="text-xl font-bold text-teal-600">{electionData.parties.length - 1}</p>
             </div>
             <div className="bg-rose-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Rejected Votes</p>
-              <p className="text-xl font-bold text-rose-600"></p>
+              <p className="text-sm text-gray-600">Majority Mark</p>
+              <p className="text-xl font-bold text-black">{Math.floor(electionData.totalSeats/2 + 1)}</p>
             </div>
             <div className="bg-amber-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Winning Margin</p>
-              <p className="text-xl font-bold text-amber-600"></p>
+              <p className="text-sm text-gray-600">Majority Achieved?</p>
+              <p className="text-xl font-bold text-amber-600">{(partiesData[0].seatsWon - Math.floor(electionData.totalSeats/2 + 1)) >= 0 ? `YES` : `NO`}</p>
             </div>
           </div>
         </div>
