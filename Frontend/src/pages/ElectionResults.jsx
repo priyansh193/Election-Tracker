@@ -156,7 +156,7 @@ function ElectionResults() {
             </div>
             <div className="bg-purple-50 p-4 rounded-lg">
               <p className="text-sm text-gray-600">Voter Turnout</p>
-              <p className="text-xl font-bold text-purple-600">{electionData.votingPercentage}</p>
+              <p className="text-xl font-bold text-purple-600">{electionData.votingPercentage}%</p>
             </div>
             <div className="bg-orange-50 p-4 rounded-lg">
               <p className="text-sm text-gray-600">Seat Share</p>

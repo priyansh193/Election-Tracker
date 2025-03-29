@@ -57,6 +57,7 @@ function SignUp() {
 
             navigate('/');
         } catch (error) {
+            console.log(error);
             setError(error.message);
         } finally {
             setLoading(false);
@@ -70,9 +71,11 @@ function SignUp() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(userData)
         });
-
         const data = await response.json();
-        if (!response.ok) throw new Error(data.message || 'Registration failed');
+        console.log(data)
+        if (!data.success) {
+            throw new Error(data.message || 'Registration failed');
+        }
         return data;
     };
 
@@ -84,7 +87,9 @@ function SignUp() {
         });
 
         const data = await response.json();
-        if (!response.ok) throw new Error(data.message || 'Login failed');
+        if (!data.success) {
+            throw new Error(data.message || 'Login failed');
+        }
         return data;
     };
 

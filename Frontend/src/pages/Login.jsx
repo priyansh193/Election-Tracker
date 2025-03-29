@@ -36,7 +36,7 @@ function Login() {
 
             const data = await response.json()
 
-            if (!response.ok) {
+            if (!data.success) {
                 throw new Error(data.message || 'Login failed')
             }
 
