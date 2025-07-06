@@ -45,7 +45,7 @@ function Login() {
             setIsLoggedIn(true)
             const userData = localStorage.getItem('UserData')
             setUser(JSON.parse(userData))
-            navigate('/')
+            navigate('/live')
         } catch (error) {
             setError(error.message)
         } finally {

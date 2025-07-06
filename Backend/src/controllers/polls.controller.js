@@ -70,24 +70,59 @@ const castVote = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Poll has ended")
     }
 
-    if (poll.hasUserVoted(userId)) {
-        throw new ApiError(400, "You have already voted in this poll")
-    }
-
     const partyIndex = poll.parties.findIndex(p => p.name === partyName)
     if (partyIndex === -1) {
         throw new ApiError(400, "Invalid party name")
     }
 
-    poll.parties[partyIndex].votes += 1
-    poll.totalVotes += 1
+    if (poll.hasUserVoted(userId)) {
+        let prevParty = '';
+        for (let vote of poll.voters) {
+            if (vote.userId.equals(userId)) {
+                prevParty = vote.partyVotedFor;
+                if (prevParty === partyName) {
+                    return res.status(200).json(
+                        new ApiResponse(
+                            200,
+                            {
+                                totalVotes: poll.totalVotes,
+                                partyVotes: poll.parties.find(p => p.name === partyName)?.votes ?? 0
+                            },
+                            "You have already voted for this party"
+                        )
+                    );
+                }
+                vote.partyVotedFor = partyName;
+                break;
+            }
+        }
+
+        poll.parties.forEach(party => {
+            if (party.name === prevParty){
+                party.votes--;
+            }
+            else if(party.name === partyName){
+                party.votes++;
+            }
+        })
+    } else{
+        poll.parties[partyIndex].votes += 1
+        poll.totalVotes += 1
     
-    poll.voters.push({
-        userId,
-        partyVotedFor: partyName
-    })
+        poll.voters.push({
+            userId,
+            partyVotedFor: partyName
+        })
+    }
 
     await poll.save()
+
+    const io = req.app.get("io")
+    io.emit("voteUpdate", {
+        pollId : poll._id,
+        totalVotes : poll.totalVotes,
+        parties : poll.parties
+    })
 
     return res.status(200).json(
         new ApiResponse(

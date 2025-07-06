@@ -1,6 +1,9 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
+import io from 'socket.io-client'
+
+const socket = io(import.meta.env.VITE_BACKEND_URL)
 
 function LivePolls() {
     const { isLoggedIn, user } = useContext(UserContext);
@@ -48,10 +51,34 @@ function LivePolls() {
         };
 
         fetchPolls();
+
+        socket.on('voteUpdate', (data) => {
+            setPolls((currentPolls) =>
+                currentPolls.map((poll) => {
+                    if (poll._id !== data.pollId) return poll;
+
+                    const isAlreadyUpdated =
+                    poll.totalVotes === data.totalVotes &&
+                    JSON.stringify(poll.parties) === JSON.stringify(data.parties);
+
+                return isAlreadyUpdated
+                    ? poll
+                    : {
+                        ...poll,
+                        totalVotes: data.totalVotes,
+                        parties: data.parties
+                    };
+                })
+            );
+
+            return () => {
+                socket.off('voteUpdate', voteUpdateHandler);
+            };
+        });
     }, [isLoggedIn, user]);
 
     const handleVote = async (pollId, partyName) => {
-        if (!isLoggedIn || voting || votedPolls.has(pollId)) return;
+        if (!isLoggedIn || voting) return;
 
         setVoting(true);
         try {
@@ -69,23 +96,6 @@ function LivePolls() {
             if (!response.ok) {
                 throw new Error(data.message || 'Failed to cast vote');
             }
-
-            setPolls(currentPolls =>
-                currentPolls.map(poll =>
-                    poll._id === pollId
-                        ? {
-                            ...poll,
-                            totalVotes: poll.totalVotes + 1,
-                            parties: poll.parties.map(party => ({
-                                ...party,
-                                votes: party.name === partyName 
-                                    ? party.votes + 1 
-                                    : party.votes
-                            }))
-                        }
-                        : poll
-                )
-            );
 
             setVotedPolls(current => new Map(current.set(pollId, partyName)));
             setError(null);
@@ -170,7 +180,7 @@ function LivePolls() {
                                                 <button
                                                     key={party._id}
                                                     onClick={() => handleVote(poll._id, party.name)}
-                                                    disabled={!isPollActive(poll.endDate) || hasVoted || voting}
+                                                    disabled={!isPollActive(poll.endDate) || voting}
                                                     className={`w-full p-4 rounded-lg border-2 transition-all ${
                                                         hasVoted
                                                             ? isVotedParty
@@ -178,7 +188,7 @@ function LivePolls() {
                                                                 : 'opacity-50'
                                                             : 'hover:border-purple-300'
                                                     } ${
-                                                        (!isPollActive(poll.endDate) || hasVoted || voting)
+                                                        (!isPollActive(poll.endDate) || voting)
                                                             ? 'cursor-not-allowed'
                                                             : 'cursor-pointer'
                                                     }`}

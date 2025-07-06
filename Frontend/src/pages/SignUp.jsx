@@ -55,7 +55,7 @@ function SignUp() {
             // Step 3: Set Auth State
             handleAuthSuccess(loginData.data);
 
-            navigate('/');
+            navigate('/live');
         } catch (error) {
             console.log(error);
             setError(error.message);

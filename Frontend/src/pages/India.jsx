@@ -69,7 +69,10 @@ function India() {
           <div
             key={index}
             onClick={() => handleYearClick(year)}
-            className="w-[90%] h-15 my-4 bg-gradient-to-r from-purple-500 to-pink-500 relative flex items-center justify-center text-white font-bold transform -skew-x-12 cursor-pointer hover:from-blue-500 hover:to-purple-900 transition-all duration-300 py-4"
+            className="w-[90%] h-15 my-4 bg-gradient-to-r from-purple-500 to-pink-500 
+            relative flex items-center justify-center text-white font-bold 
+            rounded-full cursor-pointer hover:from-blue-500 hover:to-purple-900 
+            transition-all duration-300 px-6 py-3"
           >
             {year}
           </div>
