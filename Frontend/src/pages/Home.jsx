@@ -5,25 +5,25 @@ const cards = [
 	{
 		to: '/states',
 		label: 'State Elections (Vidhan Sabha)',
-		img: 'public/assembly.png',
+		img: '/assembly.png',
 		bg: 'from-purple-400 to-pink-400',
 	},
 	{
 		to: '/india',
 		label: 'Indian Elections (Lok Sabha)',
-		img: '/public/india.png',
+		img: '/india.png',
 		bg: 'from-blue-400 to-purple-400',
 	},
 	{
 		to: '/international',
 		label: 'International Elections',
-		img: 'public/globe--v2.png',
+		img: '/globe--v2.png',
 		bg: 'from-green-400 to-blue-400',
 	},
 	{
 		to: '/upcomming',
 		label: 'Upcoming Elections',
-		img: 'public/calendar--v2.png',
+		img: '/calendar--v2.png',
 		bg: 'from-yellow-400 to-pink-400',
 	},
 ];
