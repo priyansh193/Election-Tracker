@@ -23,4 +23,7 @@ app.use("/api/upcommingElections", upcommingElectionRoutes)
 app.use("/api/user", UserRouter)
 app.use('/api/polls', pollRoutes)
 
+import testRoutes from "./routes/test.js";
+app.use("/api/test", testRoutes);
+
 export {app}

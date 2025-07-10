@@ -12,7 +12,7 @@ import {
 const router = Router()
 
 // Public routes
-router.get('/', getAllPolls)
+router.get('/', verifyJWT, getAllPolls)
 router.get('/:pollId', getPollResults)
 
 // Protected routes

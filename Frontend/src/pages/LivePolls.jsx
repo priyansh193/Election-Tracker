@@ -6,7 +6,7 @@ import io from 'socket.io-client'
 const socket = io(import.meta.env.VITE_BACKEND_URL)
 
 function LivePolls() {
-    const { isLoggedIn, user } = useContext(UserContext);
+    const { isLoggedIn, user, setIsLoggedIn, setUser} = useContext(UserContext);
     const [polls, setPolls] = useState([]);
     const [votedPolls, setVotedPolls] = useState(new Map());
     const [error, setError] = useState(null);
@@ -43,8 +43,13 @@ function LivePolls() {
                     setVotedPolls(votes);
                 }
             } catch (error) {
+                if (error.message === "Access Token Expired"){
+                    localStorage.removeItem("accessToken");
+                    localStorage.removeItem("UserData");
+                    setIsLoggedIn(false);
+                    setUser(null);
+                }
                 setError(error.message);
-                console.error('Poll fetch error:', error);
             } finally {
                 setLoading(false);
             }
@@ -100,6 +105,12 @@ function LivePolls() {
             setVotedPolls(current => new Map(current.set(pollId, partyName)));
             setError(null);
         } catch (error) {
+            if (error.message === "Access Token Expired"){
+                localStorage.removeItem("accessToken");
+                localStorage.removeItem("UserData");
+                setIsLoggedIn(false);
+                setUser(null);
+            }
             setError(error.message);
         } finally {
             setVoting(false);
